@@ -2,25 +2,24 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
-import type { CovidData } from '../lib/supabase';
+import { getBatch, type BackendCountry, getTimeSeries, type TimeSeriesResponse } from '../lib/api';
+import TimeSeriesChart from './TimeSeriesChart';
 
 interface CountryProperties {
   name: string;
   [key: string]: any;
 }
 
-interface CountryInfo {
-  name: string;
-  code: string;
-  covidData?: CovidData | null;
-  loading?: boolean;
-  error?: string;
-}
+type DataMap = Record<string, BackendCountry>;
 
 export default function WorldMap() {
   const svgRef = useRef<SVGSVGElement>(null);
-  const [selectedCountry, setSelectedCountry] = useState<CountryInfo | null>(null);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [selectedCountryName, setSelectedCountryName] = useState<string | null>(null);
+  const [dataMap, setDataMap] = useState<DataMap>({});
+  const [seriesResp, setSeriesResp] = useState<TimeSeriesResponse | null>(null);
+  const [metric, setMetric] = useState<'cases' | 'deaths'>('cases');
+  // maxValue is computed on backend for coloring; not needed in UI state
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -47,6 +46,11 @@ export default function WorldMap() {
 
     svg.call(zoom);
 
+    // Background click to clear selection
+    svg.on('click', () => {
+      setSelectedCountryName(null);
+    });
+
     d3.json<Topology>('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
       .then((world) => {
         if (!world) return;
@@ -56,93 +60,86 @@ export default function WorldMap() {
           world.objects.countries as GeometryCollection<CountryProperties>
         );
 
-        g.selectAll('path')
+        const paths = g.selectAll('path')
           .data(countries.features)
           .enter()
           .append('path')
           .attr('d', path as any)
           .attr('class', 'country')
-          .attr('fill', '#e0e0e0')
+          .attr('fill', '#B0B0B0')
           .attr('stroke', '#ffffff')
           .attr('stroke-width', 0.5)
           .style('cursor', 'pointer')
-          .on('mouseenter', function (event, d) {
+          .on('mouseenter', function (_event, d) {
             const countryName = d.properties?.name || 'Unknown';
             setHoveredCountry(countryName);
-
-            d3.select(this)
-              .transition()
-              .duration(200)
-              .attr('fill', '#4a90e2');
+            // emphasize border on hover
+            d3.select(this).raise().attr('stroke-width', 1.2);
           })
-          .on('mouseleave', function (event, d) {
+          .on('mouseleave', function (_event, _d) {
             setHoveredCountry(null);
-
-            const countryName = d.properties?.name || '';
-            const isSelected = selectedCountry?.name === countryName;
-
-            d3.select(this)
-              .transition()
-              .duration(200)
-              .attr('fill', isSelected ? '#2c5aa0' : '#e0e0e0');
+            d3.select(this).attr('stroke-width', 0.5);
           })
           .on('click', async function (event, d) {
+            // prevent background svg click
+            event.stopPropagation();
             const countryName = d.properties?.name || 'Unknown';
-            const countryCode = d.id?.toString() || '';
-
-            setSelectedCountry({
-              name: countryName,
-              code: countryCode,
-              loading: true
-            });
-
-            g.selectAll('path')
-              .transition()
-              .duration(200)
-              .attr('fill', '#e0e0e0');
-
-            d3.select(this)
-              .transition()
-              .duration(200)
-              .attr('fill', '#2c5aa0');
-
+            setSelectedCountryName(countryName);
+            // fetch timeseries for selected country
             try {
-              const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-              const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-              const apiUrl = `${supabaseUrl}/functions/v1/fetch-covid-data?country=${encodeURIComponent(countryName)}`;
-
-              const response = await fetch(apiUrl, {
-                headers: {
-                  'Authorization': `Bearer ${supabaseAnonKey}`,
-                  'Content-Type': 'application/json',
-                },
-              });
-
-              if (!response.ok) {
-                throw new Error(`Failed to fetch COVID data: ${response.status}`);
-              }
-
-              const covidData = await response.json();
-
-              setSelectedCountry({
-                name: countryName,
-                code: countryCode,
-                covidData,
-                loading: false
-              });
-            } catch (error) {
-              console.error('Error fetching COVID data:', error);
-              setSelectedCountry({
-                name: countryName,
-                code: countryCode,
-                loading: false,
-                error: 'Failed to load COVID-19 data'
-              });
+              const ts = await getTimeSeries(countryName);
+              setSeriesResp(ts);
+              setMetric('cases');
+            } catch (e) {
+              console.error('Timeseries fetch failed:', e);
+              setSeriesResp({ country: countryName, series: { cases: [], deaths: [] }, stats: null });
             }
           });
+
+        // Fetch batch COVID data for coloring
+        const countryNames = countries.features.map((f: any) => f.properties?.name).filter(Boolean);
+        getBatch(countryNames as string[])
+          .then(({ maxValue: _max, results }) => {
+            const map: DataMap = {};
+            for (const r of results) {
+              map[r.country] = r;
+            }
+            setDataMap(map);
+            // Apply fills based on returned colors
+            paths.attr('fill', (d: any) => {
+              const name = d.properties?.name || '';
+              const entry = map[name];
+              return entry?.colorHex || '#B0B0B0';
+            });
+          })
+          .catch((err) => {
+            console.error('Batch COVID fetch failed:', err);
+          });
       });
-  }, [selectedCountry]);
+  }, []);
+
+  // Keep paths colored if dataMap updates later (optional)
+  useEffect(() => {
+    if (!svgRef.current) return;
+    const svg = d3.select(svgRef.current);
+    svg
+      .selectAll('path.country')
+      .attr('fill', (d: any) => {
+        const name = (d as any)?.properties?.name || '';
+        const entry = dataMap[name];
+        return entry?.colorHex || '#B0B0B0';
+      });
+  }, [dataMap]);
+
+  // Derived overlay info
+  const activeName = selectedCountryName ?? hoveredCountry;
+  const activeEntry = activeName ? dataMap[activeName] : undefined;
+  const cases = activeEntry?.casesTotal ?? null;
+  const deaths = activeEntry?.deathsTotal ?? null;
+  const chartSeries = selectedCountryName && seriesResp && seriesResp.country === selectedCountryName
+    ? (metric === 'cases' ? (seriesResp.series.cases || []) : (seriesResp.series.deaths || []))
+    : [];
+  const stats = selectedCountryName && seriesResp && seriesResp.country === selectedCountryName ? seriesResp.stats : null;
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center">
@@ -154,107 +151,60 @@ export default function WorldMap() {
         className="max-w-full"
       />
 
-      {hoveredCountry && !selectedCountry && (
-        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white px-6 py-3 rounded-lg shadow-lg border border-gray-200">
-          <p className="text-gray-800 font-medium">{hoveredCountry}</p>
-        </div>
-      )}
-
-      {selectedCountry && (
-        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white px-8 py-6 rounded-xl shadow-2xl border border-gray-200 min-w-[400px] max-w-[500px]">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-2xl font-bold text-gray-900">{selectedCountry.name}</h3>
-            <button
-              onClick={() => setSelectedCountry(null)}
-              className="text-gray-500 hover:text-gray-700 transition-colors text-xl"
-            >
-              ✕
-            </button>
+      {activeName ? (
+        <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white px-6 py-4 rounded-lg shadow-lg border border-gray-200 min-w-[320px]">
+          <div className="flex justify-between items-start gap-4">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">{activeName}</h3>
+              <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-500">Total Cases</p>
+                  <p className="font-semibold text-gray-900">{cases != null ? cases.toLocaleString() : '—'}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Total Deaths</p>
+                  <p className="font-semibold text-gray-900">{deaths != null ? deaths.toLocaleString() : '—'}</p>
+                </div>
+              </div>
+            </div>
+            {selectedCountryName && (
+              <button
+                onClick={() => { setSelectedCountryName(null); setSeriesResp(null); }}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            )}
           </div>
-
-          {selectedCountry.loading && (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              <p className="ml-3 text-gray-600">Loading COVID-19 data...</p>
-            </div>
-          )}
-
-          {selectedCountry.error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-600 text-sm">{selectedCountry.error}</p>
-            </div>
-          )}
-
-          {selectedCountry.covidData && !selectedCountry.loading && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <p className="text-xs text-blue-600 font-medium mb-1">Total Cases</p>
-                  <p className="text-2xl font-bold text-blue-900">
-                    {selectedCountry.covidData.total_cases.toLocaleString()}
-                  </p>
-                </div>
-                <div className="bg-red-50 rounded-lg p-4">
-                  <p className="text-xs text-red-600 font-medium mb-1">Total Deaths</p>
-                  <p className="text-2xl font-bold text-red-900">
-                    {selectedCountry.covidData.total_deaths.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              {selectedCountry.covidData.total_cases > 0 && (
-                <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-4 text-white">
-                  <p className="text-xs font-medium mb-1">Mortality Rate</p>
-                  <p className="text-3xl font-bold">
-                    {((selectedCountry.covidData.total_deaths / selectedCountry.covidData.total_cases) * 100).toFixed(2)}%
-                  </p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-600 mb-1">Cases per Million</p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {Math.round(selectedCountry.covidData.cases_per_million).toLocaleString()}
-                  </p>
-                </div>
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-600 mb-1">Deaths per Million</p>
-                  <p className="text-lg font-semibold text-gray-900">
-                    {Math.round(selectedCountry.covidData.deaths_per_million).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              {selectedCountry.covidData.new_cases > 0 && (
-                <div className="border-t pt-3">
-                  <p className="text-xs text-gray-500 mb-2">Recent Changes</p>
-                  <div className="flex gap-3">
-                    <div className="flex-1 bg-orange-50 rounded p-2">
-                      <p className="text-xs text-orange-600">New Cases</p>
-                      <p className="text-sm font-semibold text-orange-900">
-                        +{selectedCountry.covidData.new_cases.toLocaleString()}
-                      </p>
-                    </div>
-                    {selectedCountry.covidData.new_deaths > 0 && (
-                      <div className="flex-1 bg-red-50 rounded p-2">
-                        <p className="text-xs text-red-600">New Deaths</p>
-                        <p className="text-sm font-semibold text-red-900">
-                          +{selectedCountry.covidData.new_deaths.toLocaleString()}
-                        </p>
-                      </div>
-                    )}
+          {selectedCountryName && (
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <button
+                  className={`px-3 py-1 rounded text-sm border ${metric === 'cases' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700'}`}
+                  onClick={() => setMetric('cases')}
+                >
+                  Total Cases
+                </button>
+                <button
+                  className={`px-3 py-1 rounded text-sm border ${metric === 'deaths' ? 'bg-rose-600 text-white border-rose-600' : 'border-gray-300 text-gray-700'}`}
+                  onClick={() => setMetric('deaths')}
+                >
+                  Total Deaths
+                </button>
+                {stats && (
+                  <div className="ml-auto text-xs text-gray-600">
+                    <span className="mr-4">Range: {stats.startDate || '—'} → {stats.endDate || '—'}</span>
+                    <span className="mr-4">Peak Daily Cases: {stats.peakDailyCases?.toLocaleString?.() || '—'} ({stats.peakCasesDate || '—'})</span>
+                    <span>Peak Daily Deaths: {stats.peakDailyDeaths?.toLocaleString?.() || '—'} ({stats.peakDeathsDate || '—'})</span>
                   </div>
-                </div>
-              )}
-
-              <div className="text-xs text-gray-400 text-center pt-2">
-                Updated: {new Date(selectedCountry.covidData.updated_at).toLocaleString()}
+                )}
               </div>
+              <TimeSeriesChart series={chartSeries} width={640} height={260} />
             </div>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

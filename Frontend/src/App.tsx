@@ -1,34 +1,62 @@
-import WorldMap from './components/WorldMap';
-import { Globe } from 'lucide-react';
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import World from './components/world';
+import Predict from './components/predict';
 
-function App() {
+function HomePage() {
+  const routes = [
+    { path: '/', label: 'Home' },
+    { path: '/world', label: 'World Map' },
+    { path: '/predict', label: 'Predict' },
+  ];
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
-      <header className="bg-slate-900/50 backdrop-blur-sm border-b border-slate-700 py-6 px-8">
-        <div className="max-w-7xl mx-auto flex items-center gap-3">
-          <Globe className="w-8 h-8 text-blue-400" />
-          <h1 className="text-3xl font-bold text-white">Interactive World Map</h1>
-        </div>
-        <p className="text-slate-300 text-sm mt-2 max-w-7xl mx-auto">
-          Click on any country to view details, hover to preview, and use scroll to zoom
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      <div className="max-w-4xl mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-4">Antigenic Drift Dashboard</h1>
+        <p className="text-slate-600 mb-6">
+          Choose a page below to explore.
         </p>
-      </header>
-
-      <main className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full h-full max-w-7xl bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-700 p-8">
-          <WorldMap />
-        </div>
-      </main>
-
-      <footer className="bg-slate-900/50 backdrop-blur-sm border-t border-slate-700 py-4 px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-slate-400 text-sm">
-            Explore countries around the world with an interactive experience
-          </p>
-        </div>
-      </footer>
+        <ul className="space-y-3">
+          {routes.map(r => (
+            <li key={r.path}>
+              <Link
+                to={r.path}
+                className="inline-block px-4 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 transition"
+              >
+                {r.label} <span className="text-slate-400">({r.path || '/'})</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
 
-export default App;
+function NotFoundPage() {
+  return (
+    <div className="min-h-screen grid place-items-center bg-slate-50">
+      <div className="text-center">
+        <h2 className="text-2xl font-semibold mb-2">404 - Page Not Found</h2>
+        <p className="text-slate-600 mb-4">The page you are looking for does not exist.</p>
+        <Link to="/" className="text-blue-600 hover:underline">Go back home</Link>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/world" element={<World />} />
+        {/* Back-compat alias */}
+        <Route path="/map" element={<Navigate to="/world" replace />} />
+        {/* Catch-all */}
+        <Route path="*" element={<NotFoundPage />} />
+        <Route path="/predict" element={<Predict />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
