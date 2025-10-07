@@ -1,44 +1,34 @@
-<<<<<<< HEAD
-import { useState, Suspense } from 'react';
-import './App.css'
-import { Canvas } from '@react-three/fiber';
-import Globe from './components/Globe';
-import Sidebar from './components/Sidebar';
-import { Globe as Globe2, Info } from 'lucide-react';
-=======
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
->>>>>>> parent of d5374ff (global)
+import WorldMap from './components/WorldMap';
+import { Globe } from 'lucide-react';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+      <header className="bg-slate-900/50 backdrop-blur-sm border-b border-slate-700 py-6 px-8">
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
+          <Globe className="w-8 h-8 text-blue-400" />
+          <h1 className="text-3xl font-bold text-white">Predicting Antigenic Drift</h1>
+        </div>
+        <p className="text-slate-300 text-sm mt-2 max-w-7xl mx-auto">
+          Click on any country to view details, hover to preview, and use scroll to zoom
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      </header>
+
+      <main className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full h-full max-w-7xl bg-white/5 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-700 p-8">
+          <WorldMap />
+        </div>
+      </main>
+
+      <footer className="bg-slate-900/50 backdrop-blur-sm border-t border-slate-700 py-4 px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-slate-400 text-sm">
+            Explore countries around the world with an interactive experience
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
 }
 
-export default App
+export default App;
