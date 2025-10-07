@@ -7,7 +7,7 @@ function App() {
       <header className="bg-slate-900/50 backdrop-blur-sm border-b border-slate-700 py-6 px-8">
         <div className="max-w-7xl mx-auto flex items-center gap-3">
           <Globe className="w-8 h-8 text-blue-400" />
-          <h1 className="text-3xl font-bold text-white">Predicting Antigenic Drift</h1>
+          <h1 className="text-3xl font-bold text-white">Interactive World Map</h1>
         </div>
         <p className="text-slate-300 text-sm mt-2 max-w-7xl mx-auto">
           Click on any country to view details, hover to preview, and use scroll to zoom
