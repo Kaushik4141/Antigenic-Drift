@@ -1,0 +1,77 @@
+{
+  "India": {
+    "sequences": 25,
+    "mutations": ["N501Y", "D614G"],
+    "risk": "High"
+  },
+  "United States of America": {
+    "sequences": 30,
+    "mutations": ["E484K"],
+    "risk": "Medium"
+  },
+  "Brazil": {
+    "sequences": 18,
+    "mutations": ["P681H", "D614G"],
+    "risk": "High"
+  },
+  "United Kingdom": {
+    "sequences": 22,
+    "mutations": ["N501Y", "E484K"],
+    "risk": "High"
+  },
+  "Germany": {
+    "sequences": 12,
+    "mutations": ["D614G"],
+    "risk": "Low"
+  },
+  "France": {
+    "sequences": 15,
+    "mutations": ["E484K"],
+    "risk": "Medium"
+  },
+  "China": {
+    "sequences": 8,
+    "mutations": ["D614G"],
+    "risk": "Low"
+  },
+  "Japan": {
+    "sequences": 10,
+    "mutations": ["E484K"],
+    "risk": "Low"
+  },
+  "Australia": {
+    "sequences": 5,
+    "mutations": [],
+    "risk": "Low"
+  },
+  "South Africa": {
+    "sequences": 20,
+    "mutations": ["E484K", "N501Y", "K417N"],
+    "risk": "High"
+  },
+  "Canada": {
+    "sequences": 14,
+    "mutations": ["D614G"],
+    "risk": "Medium"
+  },
+  "Italy": {
+    "sequences": 16,
+    "mutations": ["E484K", "D614G"],
+    "risk": "Medium"
+  },
+  "Spain": {
+    "sequences": 11,
+    "mutations": ["D614G"],
+    "risk": "Low"
+  },
+  "Mexico": {
+    "sequences": 13,
+    "mutations": ["P681H"],
+    "risk": "Medium"
+  },
+  "Russia": {
+    "sequences": 9,
+    "mutations": ["D614G"],
+    "risk": "Low"
+  }
+}
