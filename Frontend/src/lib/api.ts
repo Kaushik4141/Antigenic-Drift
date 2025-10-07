@@ -26,6 +26,38 @@ export async function getBatch(countries: string[]): Promise<BatchResponse> {
   return res.json();
 }
 
+// ---- Research papers endpoints ----
+export interface ResearchDoc {
+  _id: string;
+  title: string;
+  virus: string;
+  fileName: string; // original
+  storedFileName: string;
+  mimeType: string;
+  size: number;
+  fileUrl: string; // absolute backend URL
+  uploadedAt: string;
+}
+
+export async function getResearchList(): Promise<ResearchDoc[]> {
+  const res = await fetch(`${BASE}/api/research`);
+  if (!res.ok) throw new Error(`Research list failed: ${res.status}`);
+  return res.json();
+}
+
+export async function uploadResearch(payload: { title: string; virus: string; file: File }): Promise<ResearchDoc> {
+  const form = new FormData();
+  form.set('title', payload.title);
+  form.set('virus', payload.virus);
+  form.set('file', payload.file);
+  const res = await fetch(`${BASE}/api/research`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+  return res.json();
+}
+
 export async function getCountry(name: string, max?: number): Promise<BackendCountry> {
   const url = new URL(`${BASE}/api/covid/country/${encodeURIComponent(name)}`);
   if (typeof max === 'number' && isFinite(max) && max > 0) url.searchParams.set('max', String(max));

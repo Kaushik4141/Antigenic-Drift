@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Upload, FileText } from 'lucide-react';
-import UploadModal from './components/UploadModal';
-import DocumentCard from './components/DocumentCard';
+import UploadModal from './UploadModal';
+import DocumentCard from './DocumentCard';
 
 export interface ResearchPaper {
   id: string;
@@ -12,7 +12,7 @@ export interface ResearchPaper {
   uploadedAt: Date;
 }
 
-function research() {
+function Research() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [papers, setPapers] = useState<ResearchPaper[]>([]);
 
@@ -72,4 +72,4 @@ function research() {
   );
 }
 
-export default research;
+export default Research;

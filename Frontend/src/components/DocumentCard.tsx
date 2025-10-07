@@ -1,18 +1,24 @@
 import { FileText, Calendar } from 'lucide-react';
-import type { ResearchPaper } from '../components/research';
+interface DocumentInfo {
+  title: string;
+  virus: string;
+  fileName: string;
+  uploadedAt: string | Date;
+}
 
 interface DocumentCardProps {
-  paper: ResearchPaper;
+  paper: DocumentInfo;
   onClick: () => void;
 }
 
 export default function DocumentCard({ paper, onClick }: DocumentCardProps) {
-  const formatDate = (date: Date) => {
+  const formatDate = (date: string | Date) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    }).format(date);
+    }).format(d);
   };
 
   return (

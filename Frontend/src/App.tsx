@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import World from './components/world';
 import Predict from './components/predict';
+import Research from './components/research';
 
 function HomePage() {
   const routes = [
@@ -55,8 +56,10 @@ export default function App() {
         {/* Catch-all */}
         <Route path="*" element={<NotFoundPage />} />
         <Route path="/predict" element={<Predict />} />
+        <Route path="/research" element={<Research />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
 

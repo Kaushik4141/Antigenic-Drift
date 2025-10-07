@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { X, Upload } from 'lucide-react';
-import type { ResearchPaper } from '../App';
 
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (paper: Omit<ResearchPaper, 'id' | 'uploadedAt'>) => void;
+  onUpload: (paper: { title: string; virus: string; file: File }) => void;
 }
 
 const virusOptions = [
@@ -44,13 +43,7 @@ export default function UploadModal({ isOpen, onClose, onUpload }: UploadModalPr
       return;
     }
 
-    const fileUrl = URL.createObjectURL(file);
-    onUpload({
-      title,
-      virus,
-      fileUrl,
-      fileName: file.name,
-    });
+    onUpload({ title, virus, file });
 
     setTitle('');
     setVirus('');
