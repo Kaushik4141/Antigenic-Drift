@@ -2,31 +2,27 @@ import React, { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import Navigation from './components/lanNavigation';
-import Hero from './components/Hero';
-import Showreel from './components/Showreel';
-import BrandPartners from './components/BrandPartners';
-import Portfolio from './components/Portfolio';
-import ConceptCards from './components/ConceptCards';
+import Navigation from './Navigation';
+import Hero from './Hero';
+import Showreel from './Showreel';
+import BrandPartners from './BrandPartners';
+import Portfolio from './Portfolio';
+import ConceptCards from './ConceptCards';
 
-import About from './components/About';
+import About from './About';
 
-import FAQ from './components/FAQ';
-import Blogs from './components/Blogs';
+import FAQ from './FAQ';
+import Blogs from './Blogs';
 
-import Footer from './components/Footer';
-import ScrollButton from './components/ScrollButton';
-import './styles/main.css';
+import Footer from './Footer';
+import ScrollButton from './ScrollButton';
 
 gsap.registerPlugin(ScrollTrigger);
 
 function Mainlanding() {
   useEffect(() => {
     // Initialize Lenis smooth scrolling
-    const lenis = new Lenis({
-      smooth: true,
-      lerp: 0.08
-    });
+    const lenis = new Lenis();
 
     function raf(time: number) {
       lenis.raf(time);
@@ -36,14 +32,18 @@ function Mainlanding() {
     requestAnimationFrame(raf);
 
     // Handle anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
+      const onClick = (e: MouseEvent) => {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href') || '');
-        if (target) {
-          lenis.scrollTo(target);
+        const href = anchor.getAttribute('href');
+        if (href) {
+          const target = document.querySelector(href);
+          if (target) {
+            lenis.scrollTo(target as HTMLElement);
+          }
         }
-      });
+      };
+      anchor.addEventListener('click', onClick);
     });
 
     // Cleanup
@@ -73,4 +73,4 @@ function Mainlanding() {
   );
 }
 
-export default App;
+export default Mainlanding;

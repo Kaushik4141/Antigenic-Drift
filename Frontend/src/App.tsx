@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import World from './components/world';
 import Predict from './components/predict';
 import Research from './components/research';
+import Mainlanding from './components/landingpage/mainlanding';
+
 
 function HomePage() {
   const routes = [
@@ -49,7 +51,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Mainlanding/>} />
         <Route path="/world" element={<World />} />
         {/* Back-compat alias */}
         <Route path="/map" element={<Navigate to="/world" replace />} />
