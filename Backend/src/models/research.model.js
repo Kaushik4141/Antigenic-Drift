@@ -8,6 +8,7 @@ const ResearchSchema = new mongoose.Schema({
   mimeType: { type: String, required: true },
   size: { type: Number, required: true },
   fileUrl: { type: String, required: true }, // absolute URL served by backend
+  summary: { type: String, default: '' }, // AI generated 3-4 line summary
   uploadedAt: { type: Date, default: Date.now },
 });
 

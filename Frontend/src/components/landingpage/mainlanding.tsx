@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import Navigation from './components/Navigation';
+import Navigation from './components/lanNavigation';
 import Hero from './components/Hero';
 import Showreel from './components/Showreel';
 import BrandPartners from './components/BrandPartners';

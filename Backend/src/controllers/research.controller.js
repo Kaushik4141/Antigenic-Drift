@@ -1,4 +1,6 @@
 const ResearchPaper = require('../models/research.model');
+const path = require('path');
+const { summarizeFile } = require('./ai_summerize.controller');
 
 // Create/upload a new research paper (expects multer to have processed the file)
 exports.create = async (req, res) => {
@@ -15,6 +17,18 @@ exports.create = async (req, res) => {
     const storedFileName = req.file.filename;
     const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${storedFileName}`;
 
+    // Attempt AI summarization for PDFs only
+    let summary = '';
+    try {
+      if (req.file.mimetype === 'application/pdf') {
+        const absFilePath = path.join(__dirname, '..', 'uploads', storedFileName);
+        summary = await summarizeFile(absFilePath, req.file.mimetype);
+      }
+    } catch (e) {
+      console.warn('Summarization failed:', e?.message || e);
+      // Continue without blocking the upload
+    }
+
     const doc = await ResearchPaper.create({
       title,
       virus,
@@ -23,6 +37,7 @@ exports.create = async (req, res) => {
       mimeType: req.file.mimetype,
       size: req.file.size,
       fileUrl,
+      summary,
     });
 
     return res.status(201).json(doc);

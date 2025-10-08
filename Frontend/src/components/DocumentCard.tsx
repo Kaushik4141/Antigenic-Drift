@@ -4,6 +4,7 @@ interface DocumentInfo {
   virus: string;
   fileName: string;
   uploadedAt: string | Date;
+  summary?: string;
 }
 
 interface DocumentCardProps {
@@ -24,7 +25,8 @@ export default function DocumentCard({ paper, onClick }: DocumentCardProps) {
   return (
     <div
       onClick={onClick}
-      className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 cursor-pointer hover:border-white transition-all duration-200 hover:shadow-lg hover:shadow-white/10"
+      className="group relative bg-zinc-900 border border-zinc-800 rounded-lg p-6 cursor-pointer hover:border-white transition-all duration-200 hover:shadow-lg hover:shadow-white/10"
+      title={paper.summary ? paper.summary : undefined}
     >
       <div className="flex items-start gap-4">
         <div className="bg-white/10 p-3 rounded-lg">
@@ -43,6 +45,18 @@ export default function DocumentCard({ paper, onClick }: DocumentCardProps) {
       </div>
       <div className="mt-4 pt-4 border-t border-zinc-800">
         <p className="text-sm text-gray-500 truncate">{paper.fileName}</p>
+      </div>
+
+      {/* Hover overlay for summary */}
+      <div className="pointer-events-none absolute inset-0 rounded-lg bg-black/90 text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-4 flex">
+        <div className="my-auto w-full max-h-40 overflow-y-auto">
+          <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">Summary</p>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {paper.summary && paper.summary.trim().length > 0
+              ? paper.summary
+              : 'No summary available.'}
+          </p>
+        </div>
       </div>
     </div>
   );

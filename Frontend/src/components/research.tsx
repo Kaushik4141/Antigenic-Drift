@@ -1,29 +1,55 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, FileText } from 'lucide-react';
 import UploadModal from './UploadModal';
 import DocumentCard from './DocumentCard';
 
 export interface ResearchPaper {
-  id: string;
+  _id: string;
   title: string;
   virus: string;
   fileUrl: string;
   fileName: string;
-  uploadedAt: Date;
+  uploadedAt: string | Date;
+  summary?: string;
 }
 
 function Research() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [papers, setPapers] = useState<ResearchPaper[]>([]);
+  const API_BASE = (import.meta as any)?.env?.VITE_API_BASE_URL || '';
 
-  const handleUpload = (paper: Omit<ResearchPaper, 'id' | 'uploadedAt'>) => {
-    const newPaper: ResearchPaper = {
-      ...paper,
-      id: Date.now().toString(),
-      uploadedAt: new Date(),
-    };
-    setPapers([newPaper, ...papers]);
-    setIsModalOpen(false);
+  // Load existing papers from backend
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/research`);
+        if (!res.ok) throw new Error('Failed to load research papers');
+        const data = await res.json();
+        setPapers(data);
+      } catch (e) {
+        console.warn('Could not fetch research papers:', (e as any)?.message || e);
+      }
+    })();
+  }, []);
+
+  const handleUpload = async (paper: { title: string; virus: string; file: File }) => {
+    try {
+      const formData = new FormData();
+      formData.append('title', paper.title);
+      formData.append('virus', paper.virus);
+      formData.append('file', paper.file);
+
+      const res = await fetch(`${API_BASE}/api/research`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      const doc: ResearchPaper = await res.json();
+      setPapers((prev) => [doc, ...prev]);
+      setIsModalOpen(false);
+    } catch (e) {
+      alert(`Upload failed: ${(e as any)?.message || e}`);
+    }
   };
 
   const handleOpenPaper = (fileUrl: string) => {
@@ -54,7 +80,7 @@ function Research() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {papers.map((paper) => (
               <DocumentCard
-                key={paper.id}
+                key={paper._id}
                 paper={paper}
                 onClick={() => handleOpenPaper(paper.fileUrl)}
               />
