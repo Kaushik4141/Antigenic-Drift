@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import VideoPopup from './VideoPopup';
+import { Link } from 'react-router-dom';
 
 interface PortfolioItem {
   id: number;
   title: string;
   company: string;
   videoUrl: string;
-}
+};
 
 const Portfolio: React.FC = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -16,27 +17,21 @@ const Portfolio: React.FC = () => {
   const portfolioItems: PortfolioItem[] = [
     {
       id: 1,
-      title: "GreenWaves",
-      company: "Eco-Warriors",
-      videoUrl: "https://framerusercontent.com/assets/t3oWwHTiHPdqvISgXglF9dJecA.mp4"
+      title: "HeatMap",
+      company: "Research",
+      videoUrl: "/feature1.mp4"
     },
     {
       id: 2,
-      title: "Mystic Horizons",
-      company: "ModeElite",
-      videoUrl: "https://framerusercontent.com/assets/t3oWwHTiHPdqvISgXglF9dJecA.mp4"
+      title: "Research",
+      company: "Research",
+      videoUrl: "/feature2.mp4"
     },
     {
       id: 3,
-      title: "Pixel Fusion",
-      company: "Techno",
-      videoUrl: "https://framerusercontent.com/assets/t3oWwHTiHPdqvISgXglF9dJecA.mp4"
-    },
-    {
-      id: 4,
-      title: "EcoExplorer",
-      company: "GreenEarth",
-      videoUrl: "https://framerusercontent.com/assets/t3oWwHTiHPdqvISgXglF9dJecA.mp4"
+      title: "Predictive Analysis",
+      company: "/feature3.mp4",
+      videoUrl: "/feature3.mp4"
     },
     
   ];
@@ -56,7 +51,7 @@ const Portfolio: React.FC = () => {
       // Portfolio card cursor effects
       const cards = document.querySelectorAll('.portfolio-cards .card');
 
-      cards.forEach((card, index) => {
+      cards.forEach((card) => {
         const cursor = card.querySelector('.card-cursor') as HTMLElement;
         const video = card.querySelector('video') as HTMLVideoElement;
         
@@ -105,10 +100,10 @@ const Portfolio: React.FC = () => {
           <h2 className="syne text-[25px] lg:text-[30px] font-semibold text-white leading-[1em] text-center md:text-start">
             What We Bring to the Table
           </h2>
-          <button className="syne hover-btn text-[14px] lg:text-[16px] font-bold leading-[1em] text-white rounded-[50px] py-[18px] px-[30px] lg:py-[17px] lg:px-[33px] cursor-pointer flex items-center gap-[8px] relative">
+          <Link to="/research" className="syne hover-btn text-[14px] lg:text-[16px] font-bold leading-[1em] text-white rounded-[50px] py-[18px] px-[30px] lg:py-[17px] lg:px-[33px] cursor-pointer flex items-center gap-[8px] relative">
             <div className="red-circle w-[12px] h-[12px] bg-[#FF000D] rounded-full"></div>
             <span>See All Projects</span>
-          </button>
+          </Link>
         </div>
 
         <div className="portfolio-cards w-[95%] md:w-full flex items-center justify-center lg:justify-[unset] flex-col lg:flex-row gap-[25px] lg:gap-[10px] lg:translate-x-[60vw]">

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Link } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,7 +45,7 @@ const Hero: React.FC = () => {
         <p className="inter text-[16px] md:text-[17px] leading-[1.5em] text-white mt-[10px] mb-[25px] w-[75%] md:w-[60%] lg:w-[45%]">
           Harnessing Machine Learning and Deep Sequencing Data to anticipate viral evolution and inform prophylactic strategies against future pandemics.
         </p>
-        <button className="syne hover-btn text-[14px] md:text-[16px] font-bold leading-[1em] text-white rounded-[50px] py-[17px] px-[33px] cursor-pointer flex items-center gap-[8px] relative">
+        <button to="/predict" className="syne hover-btn text-[14px] md:text-[16px] font-bold leading-[1em] text-white rounded-[50px] py-[17px] px-[33px] cursor-pointer flex items-center gap-[8px] relative">
           <div className="red-circle w-[12px] h-[12px] bg-[#FF000D] rounded-full"></div>
           <span>Let's predict</span>
         </button>

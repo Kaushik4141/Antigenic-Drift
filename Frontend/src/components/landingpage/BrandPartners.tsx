@@ -3,12 +3,18 @@ import { gsap } from 'gsap';
 
 const BrandPartners: React.FC = () => {
   const logos = [
-    'https://images.pexels.com/photos/6224/hands-people-woman-working.jpg?auto=compress&cs=tinysrgb&w=150&h=50',
-    'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=150&h=50',
-    'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=150&h=50',
-    'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=150&h=50',
-    'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=150&h=50',
-    'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=150&h=50',
+     "https://raw.githubusercontent.com/github/explore/main/topics/react/react.png",// React
+    "https://raw.githubusercontent.com/github/explore/main/topics/typescript/typescript.png", // TypeScript
+    "/tailwind.png", // Tailwind CSS
+    "/programing.png", // Node.js
+    "/express.png", // Express.js
+    "/mongo.png", // MongoDB
+    "https://raw.githubusercontent.com/github/explore/main/topics/socket-io/socket-io.png", // Socket.io
+    "https://raw.githubusercontent.com/github/explore/main/topics/python/python.png", 
+    "Pandas_logo.svg.png", // Pandas
+    "https://raw.githubusercontent.com/github/explore/main/topics/pytorch/pytorch.png",
+    "/gsap.png", // GSAP
+    "/lenis.gif" // Lenis
   ];
 
   useEffect(() => {
@@ -40,7 +46,7 @@ const BrandPartners: React.FC = () => {
         <div className="logos-wrapper flex">
           {logos.map((logo, index) => (
             <div key={index} className="img-box w-[150px] lg:w-[200px] md:w-[175px] h-[70px] md:h-[88px] p-[15px] border-r-[1px] border-solid border-[#ffffff73] shrink-0">
-              <img className="w-full h-full object-contain filter grayscale brightness-0 invert opacity-70" src={logo} alt={`Logo ${index + 1}`} />
+              <img className="w-full h-full object-contain filter " src={logo} alt={`Logo ${index + 1}`} />
             </div>
           ))}
         </div>

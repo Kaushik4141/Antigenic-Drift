@@ -1,39 +1,9 @@
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import World from './components/world';
 import Predict from './components/predict';
 import Research from './components/research';
 import Mainlanding from './components/landingpage/mainlanding';
-
-
-function HomePage() {
-  const routes = [
-    { path: '/', label: 'Home' },
-    { path: '/world', label: 'World Map' },
-    { path: '/predict', label: 'Predict' },
-  ];
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-4">Antigenic Drift Dashboard</h1>
-        <p className="text-slate-600 mb-6">
-          Choose a page below to explore.
-        </p>
-        <ul className="space-y-3">
-          {routes.map(r => (
-            <li key={r.path}>
-              <Link
-                to={r.path}
-                className="inline-block px-4 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 transition"
-              >
-                {r.label} <span className="text-slate-400">({r.path || '/'})</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
+import Navigation from './components/landingpage/Navigation';
 
 function NotFoundPage() {
   return (
@@ -47,9 +17,18 @@ function NotFoundPage() {
   );
 }
 
+function TopSpacer() {
+  const location = useLocation();
+  // No spacer on landing page to preserve hero design; add spacer elsewhere
+  if (location.pathname === '/') return null;
+  return <div className="h-[90px] md:h-[110px]" />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <Navigation />
+      <TopSpacer />
       <Routes>
         <Route path="/" element={<Mainlanding/>} />
         <Route path="/world" element={<World />} />

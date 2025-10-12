@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navigation: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,23 +25,22 @@ const Navigation: React.FC = () => {
           <div className="links flex items-center gap-[10px]">
             <ul className="hidden lg:flex items-center nav-menu">
               <li className="px-[16px] py-[14px] rounded-[50px]">
-                <a className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" href="#top">Map</a>
+                <Link className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" to="/world">Map</Link>
               </li>
               <li className="px-[16px] py-[14px] rounded-[50px]">
-                <a className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" href="#top">Pridiction</a>
+                <Link className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" to="/predict">Prediction</Link>
               </li>
               <li className="px-[16px] py-[14px] rounded-[50px]">
-                <a className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" href="#top">Researchers</a>
+                <Link className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" to="/research">Researchers</Link>
               </li>
              
               <li className="px-[16px] py-[14px] rounded-[50px]">
-                <a className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" href="#projects">Login</a>
+                <Link className="syne flex text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" to="/predict">Login</Link>
               </li>
             </ul>
-            <button className="syne text-[#0d0d0d] bg-white text-[16px] leading-[1em] font-bold px-[33px] py-[17px] items-center gap-[7px] rounded-[50px] cursor-pointer hidden lg:flex">
-              <div className="red-circle w-[12px] h-[12px] bg-[#FF000D] rounded-full"></div>
-              <span>Sign Up</span>
-            </button>
+            <Link to="/predict" className="syne text-[#0d0d0d] bg-white text-[16px] leading-[1em] font-bold px-[33px] py-[17px] items-center gap-[7px] rounded-[50px] cursor-pointer hidden lg:flex">
+             
+            </Link>
             <div 
               className={`hamburger lg:hidden ${isOpen ? 'active' : ''}`}
               onClick={toggleMenu}
@@ -56,16 +55,16 @@ const Navigation: React.FC = () => {
         <div className={`mobile-menu flex flex-col items-center w-full gap-4 max-h-0 opacity-0 ${isOpen ? 'active' : ''}`}>
           <ul className="flex flex-col items-center w-full gap-2">
             <li className="px-[16px] py-[14px] rounded-[50px] w-full text-center">
-              <a className="syne flex justify-center text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" href="#top" onClick={closeMenu}>Our Team</a>
+              <Link className="syne flex justify-center text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" to="/research" onClick={closeMenu}>Researchers</Link>
             </li>
             <li className="px-[16px] py-[14px] rounded-[50px] w-full text-center">
-              <a className="syne flex justify-center text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" href="#projects" onClick={closeMenu}>Login</a>
+              <Link className="syne flex justify-center text-[16px] font-semibold leading-[1em] text-[#ffffffcc]" to="/predict" onClick={closeMenu}>Login</Link>
             </li>
             
           </ul>
-          <button className="syne text-[#0d0d0d] bg-Purple text-[16px] leading-[1em] font-bold px-[33px] py-[17px] rounded-[50px] cursor-pointer">
+          <Link to="/predict" onClick={closeMenu} className="syne text-[#0d0d0d] bg-Purple text-[16px] leading-[1em] font-bold px-[33px] py-[17px] rounded-[50px] cursor-pointer">
             Sign Up
-          </button>
+          </Link>
         </div>
       </header>
     </nav>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { gsap } from 'gsap';
-import { ChevronDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ConceptCard {
   id: number;
@@ -39,7 +39,7 @@ const ConceptCards: React.FC = () => {
     {
       id: 2,
       title: "Influenza_A_H1N1_Subtype_X",
-      description: "Influenza A H1N1 constantly evolves through Antigenic Drift (small mutations in HA/NA proteins) and Antigenic Shift\ (major genetic reassortment) to evade immunity and enhance growth. Prevention is primarily achieved through annual vaccination and non-pharmaceutical interventions like hand hygiene and avoiding close contact with sick individuals.",
+      description: "Influenza A H1N1 constantly evolves through Antigenic Drift (small mutations in HA/NA proteins) and Antigenic Shift\\ (major genetic reassortment) to evade immunity and enhance growth. Prevention is primarily achieved through annual vaccination and non-pharmaceutical interventions like hand hygiene and avoiding close contact with sick individuals.",
       imageUrl: "/influ.jpg",
       details: {
         left: [
@@ -99,7 +99,7 @@ const ConceptCards: React.FC = () => {
     {
       id: 5,
       title: "Sars_Like_Coron_V_2025", 
-      description: "SARS-like coronaviruses mutate rapidly, particularly in the Spike protein, leading to variants with increased transmissibility and growth. Prevention relies on up-to-date vaccination, improved ventilation, masking, and rigorous public health surveillance to control its spread.",
+      description: "SARS-like coronaviruses mutate rapidly, particularly in the Spike protein, leading to variants with Increased transmissibility and growth. Prevention relies on up-to-date vaccination, improved ventilation, masking, and rigorous public health surveillance to control its spread.",
       imageUrl: "/sars.jpg",
       details: {
         left: [
@@ -154,10 +154,10 @@ const ConceptCards: React.FC = () => {
             
           </h2>
 
-          <button className="syne hover-btn text-[14px] lg:text-[16px] font-bold leading-[1em] text-white rounded-[50px] py-[18px] px-[30px] lg:py-[17px] lg:px-[33px] cursor-pointer flex items-center gap-[8px] relative">
+          <Link to="/predict" className="syne hover-btn text-[14px] lg:text-[16px] font-bold leading-[1em] text-white rounded-[50px] py-[18px] px-[30px] lg:py-[17px] lg:px-[33px] cursor-pointer flex items-center gap-[8px] relative">
             <div className="red-circle w-[12px] h-[12px] bg-[#FF000D] rounded-full"></div>
             <span>Explore Features</span>
-          </button>
+          </Link>
         </div>
 
         <div className="concept-cards w-[95%] lg:w-[67%] flex flex-col gap-[30px]">

@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import Navigation from './Navigation';
 import Hero from './Hero';
 import Showreel from './Showreel';
 import BrandPartners from './BrandPartners';
 import Portfolio from './Portfolio';
 import ConceptCards from './ConceptCards';
+import './styles/main.css';
 
 import About from './About';
 
@@ -54,7 +54,6 @@ function Mainlanding() {
 
   return (
     <div className="App">
-      <Navigation />
       <Hero />
       <Showreel />
       <BrandPartners />
